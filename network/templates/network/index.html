@@ -1,0 +1,47 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div id="container">
+    <form id="new_post">
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">
+              <strong>New Post</strong>
+          </label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+          <button type="submit" class="btn btn-primary">Post</button>
+        </div>
+    </form>
+</div>
+
+<div class="card w-75">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    <a href="#" class="btn btn-primary">Button</a>
+  </div>
+</div>
+
+{% for post in user_posts %}
+<div id="post">
+    <div class="card">
+        <div class="card-header">
+            <a href="" id="load_profile">{{post.user}}</a>
+        </div>
+        <div class="card-body">
+            <a href="">Edit</a>
+        </div>
+        <div class="card-body">
+          <blockquote class="blockquote mb-0">
+            <p>{{post.post_data}}</p>
+            <p>{{post.timestamp}}</p>
+            <footer class="blockquote-footer"><img src="https://img.icons8.com/small/16/fa314a/filled-like.png" alt=""> <cite title="Source Title">{{post.likes}}</cite></footer>
+          </blockquote>
+        </div>
+      </div>
+
+</div>
+{% endfor %}
+
+<script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
