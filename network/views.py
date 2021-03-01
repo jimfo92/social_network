@@ -78,4 +78,5 @@ def new_post(request):
         #Save post to Post model
         post = Post(user=request.user, post_data=data)
         post.save()
-        return HttpResponseRedirect(reverse("index"))
+        #return render(request, 'network/register.html')
+        return HttpResponseRedirect(reverse('index.html'))

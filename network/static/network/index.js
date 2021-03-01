@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     //add click listeners
-    document.querySelectorAll('#load_profile').addEventListener('click', () => load_profile());
+    document.querySelectorAll('.load_profile').forEach(btn => {
+            btn.onclick = function() {
+                load_profile();
+            }
+    })
 
     //new_post onSubmit 
     document.querySelector('#new_post').onsubmit = function() {
@@ -18,13 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         })
 
-        //return false;
+        return false;
     }
 })
 
 
 function load_profile() {
-    alert('exafanisou');
     console.log('exafanisou');
-    document.querySelector('#new_post').style.display = 'none';
+    document.querySelector('#container').style.display = 'none';
 }
