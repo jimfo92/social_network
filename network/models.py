@@ -14,3 +14,12 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} posts: {self.post_data} on {self.timestamp}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_post": self.user.username,
+            "post": self.post_data,
+            "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p"),
+            "likes_number": self.likes
+        }

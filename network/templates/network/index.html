@@ -3,7 +3,7 @@
 
 {% block body %}
 <div id="container">
-    <form id="new_post">
+    <form id="new_post" action="#">
         <div class="form-group">
           <label for="exampleFormControlTextarea1">
               <strong>New Post</strong>
@@ -13,7 +13,7 @@
         </div>
     </form>
 </div>
-
+<!--
 <div class="card w-75">
   <div class="card-body">
     <h5 class="card-title">Card title</h5>
@@ -21,27 +21,10 @@
     <a href="#" class="btn btn-primary">Button</a>
   </div>
 </div>
+-->
 
-{% for post in user_posts %}
-<div id="post">
-    <div class="card">
-        <div class="card-header">
-            <a href="#" class="load_profile">{{post.user}}</a>
-        </div>
-        <div class="card-body">
-            <a href="">Edit</a>
-        </div>
-        <div class="card-body">
-          <blockquote class="blockquote mb-0">
-            <p>{{post.post_data}}</p>
-            <p>{{post.timestamp}}</p>
-            <footer class="blockquote-footer"><img src="https://img.icons8.com/small/16/fa314a/filled-like.png" alt=""> <cite title="Source Title">{{post.likes}}</cite></footer>
-          </blockquote>
-        </div>
-      </div>
-
+<div class="post">
 </div>
-{% endfor %}
 
 <script src="{% static 'network/index.js' %}"></script>
 {% endblock %}

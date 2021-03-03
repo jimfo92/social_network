@@ -7,15 +7,17 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import User, Post
 from django.contrib.auth.decorators import login_required
-
+from django.http import JsonResponse
 
 
 def index(request):
+
+    return render(request, "network/index.html")
+
+def load_posts(request):
     posts = Post.objects.all()
 
-    return render(request, "network/index.html", {
-        "user_posts":posts
-    })
+    return JsonResponse([post.serialize() for post in posts], safe=False)
 
 
 def login_view(request):
@@ -78,5 +80,6 @@ def new_post(request):
         #Save post to Post model
         post = Post(user=request.user, post_data=data)
         post.save()
+        return JsonResponse({"message": "Post sent successfully."}, status=201)
         #return render(request, 'network/register.html')
-        return HttpResponseRedirect(reverse('index.html'))
+        #return HttpResponseRedirect(reverse('index.html'))
