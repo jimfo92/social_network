@@ -1,14 +1,21 @@
 #container {
     border-style: groove; 
     margin-left: 3em;
-     margin-right: 3em; 
-     margin-top: 0.5em;
+    margin-right: 3em; 
+    margin-top: 0.5em;
 }
 
 .post {
     margin-left: 1.5em;
     margin-right: 1.5em;
     margin-top: 0.5em;
+}
+
+#user_profile {
+    margin-left: 3em;
+    margin-right: 3em;
+    margin-top: 0.5em;
+    width: 98em;
 }
 
 form {

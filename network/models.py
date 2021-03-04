@@ -17,8 +17,9 @@ class Post(models.Model):
 
     def serialize(self):
         return {
-            "id": self.id,
+            "post_id": self.id,
             "user_post": self.user.username,
+            "user_id": self.user.id,
             "post": self.post_data,
             "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p"),
             "likes_number": self.likes

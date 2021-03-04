@@ -81,5 +81,7 @@ def new_post(request):
         post = Post(user=request.user, post_data=data)
         post.save()
         return JsonResponse({"message": "Post sent successfully."}, status=201)
-        #return render(request, 'network/register.html')
-        #return HttpResponseRedirect(reverse('index.html'))
+
+
+def load_profile(request):
+    return JsonResponse({"login_user_id": request.user.id})

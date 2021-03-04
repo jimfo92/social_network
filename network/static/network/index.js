@@ -24,8 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function load_posts() {
+    //not display user_profile id
+    document.querySelector('#user_profile').style.display = 'none';
+
     //clear input field
     document.querySelector('#exampleFormControlTextarea1').value = '';
+
     fetch('/load_posts').then(response => response.json()).then((posts) => {
         console.log(posts);
         posts.forEach(post => {
@@ -33,7 +37,7 @@ function load_posts() {
             ps.className = 'post';
             ps.innerHTML = `<div class="card">
             <div class="card-header">
-                <a href="#" id="load_profile">${post.user_post}</a>
+                <a href="#" id="load_profile" data-user_id="${post.user_id}" >${post.user_post}</a>
             </div>
             <div class="card-body">
                 <a href="">Edit</a>
@@ -47,19 +51,42 @@ function load_posts() {
             </div>
           </div>`;
 
-          document.querySelector('.post').append(ps);
+          document.querySelector('.post').appendChild(ps);
+
+          document.querySelector('#load_profile').onclick = function() {
+            console.log('onClick: ' + username);
+          }
         });
 
-        //add click listeners
-        document.querySelectorAll('#load_profile').forEach(btn => {
-            btn.onclick = function() {
-                load_profile();
-            }
-        })
+        //document.querySelectorAll('#load_profile').forEach(btn => {
+            //let username = document.querySelector('#load_profile').innerHTML;
+            //let user_id = document.querySelector('#load_profile').dataset.user_id;
+            //btn.onclick = function() {
+                //load_profile(username, user_id);
+            //}
+        //})
     })
 }
 
 
-function load_profile() {
-    console.log('load_user_profile');
+function load_profile(username, user_id) {
+    console.log('load_user_profile ' + username + ' ' + user_id);
+
+    //Display user_profile, and dissapear post input
+    document.querySelector('#user_profile').style.display = 'block';
+    document.querySelector('#container').style.display = 'none';
+
+    document.querySelector('#username').innerHTML = username;
+
+    //display follow and unfollow button
+    //document.querySelector('#follow').style.display = 'block';
+    //document.querySelector('#unfollow').style.display = 'block';
+
+    //consider if user who created the post is the same who was logged in
+    fetch('load_profile').then(response => response.json()).then(data => {
+        if (parseInt(user_id) === parseInt(data.login_user_id)) {
+            //document.querySelector('#follow').style.display = 'none';
+            //document.querySelector('#unfollow').style.display = 'none';
+        }
+    })
 }
