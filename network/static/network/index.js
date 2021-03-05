@@ -32,33 +32,7 @@ function load_posts() {
 
     fetch('/load_posts').then(response => response.json()).then((posts) => {
         console.log(posts);
-        posts.forEach(post => {
-            //create post
-            let div = document.createElement('div');
-            div.style.border = 'groove';
-            div.className = 'post';
-            document.querySelector('.post').append(div);
-            let username = document.createElement('A');
-            username.setAttribute('href',"#");
-            username.innerHTML = post.user_post;
-            div.appendChild(username);
-            let br = document.createElement('div');
-            div.appendChild(br);
-            let edit = document.createElement('A');
-            edit.setAttribute('href',"#");
-            edit.innerHTML = 'edit';
-            div.append(edit);
-            let data = document.createElement('p');
-            data.innerHTML = post.post;
-            div.appendChild(data);
-            let timestamp = document.createElement('p');
-            timestamp.innerHTML = post.timestamp;
-            div.appendChild(timestamp);
-
-            username.addEventListener('click', () => {
-                load_profile(post.user_post, post.user_id);
-            })
-        });
+        display_posts(posts);
     })
 }
 
@@ -82,4 +56,35 @@ function load_profile(username, user_id) {
             document.querySelector('#unfollow').style.display = 'none';
         }
     })
+}
+
+
+function display_posts(posts) {
+    posts.forEach(post => {
+        //create post
+        let div = document.createElement('div');
+        div.style.border = 'groove';
+        div.className = 'post';
+        document.querySelector('.post').append(div);
+        let username = document.createElement('A');
+        username.setAttribute('href',"#");
+        username.innerHTML = post.user_post;
+        div.appendChild(username);
+        let br = document.createElement('div');
+        div.appendChild(br);
+        let edit = document.createElement('A');
+        edit.setAttribute('href',"#");
+        edit.innerHTML = 'edit';
+        div.append(edit);
+        let data = document.createElement('p');
+        data.innerHTML = post.post;
+        div.appendChild(data);
+        let timestamp = document.createElement('p');
+        timestamp.innerHTML = post.timestamp;
+        div.appendChild(timestamp);
+
+        username.addEventListener('click', () => {
+            load_profile(post.user_post, post.user_id);
+        })
+    });
 }
