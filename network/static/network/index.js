@@ -33,38 +33,32 @@ function load_posts() {
     fetch('/load_posts').then(response => response.json()).then((posts) => {
         console.log(posts);
         posts.forEach(post => {
-            let ps = document.createElement('div');
-            ps.className = 'post';
-            ps.innerHTML = `<div class="card">
-            <div class="card-header">
-                <a href="#" id="load_profile" data-user_id="${post.user_id}" >${post.user_post}</a>
-            </div>
-            <div class="card-body">
-                <a href="">Edit</a>
-            </div>
-            <div class="card-body">
-              <blockquote class="blockquote mb-0">
-                <p>${post.post}</p>
-                <p>${post.timestamp}</p>
-                <footer class="blockquote-footer"><img src="https://img.icons8.com/small/16/fa314a/filled-like.png" alt=""> <cite title="Source Title">${post.likes_number}</cite></footer>
-              </blockquote>
-            </div>
-          </div>`;
+            //create post
+            let div = document.createElement('div');
+            div.style.border = 'groove';
+            div.className = 'post';
+            document.querySelector('.post').append(div);
+            let username = document.createElement('A');
+            username.setAttribute('href',"#");
+            username.innerHTML = post.user_post;
+            div.appendChild(username);
+            let br = document.createElement('div');
+            div.appendChild(br);
+            let edit = document.createElement('A');
+            edit.setAttribute('href',"#");
+            edit.innerHTML = 'edit';
+            div.append(edit);
+            let data = document.createElement('p');
+            data.innerHTML = post.post;
+            div.appendChild(data);
+            let timestamp = document.createElement('p');
+            timestamp.innerHTML = post.timestamp;
+            div.appendChild(timestamp);
 
-          document.querySelector('.post').appendChild(ps);
-
-          document.querySelector('#load_profile').onclick = function() {
-            console.log('onClick: ' + username);
-          }
+            username.addEventListener('click', () => {
+                load_profile(post.user_post, post.user_id);
+            })
         });
-
-        //document.querySelectorAll('#load_profile').forEach(btn => {
-            //let username = document.querySelector('#load_profile').innerHTML;
-            //let user_id = document.querySelector('#load_profile').dataset.user_id;
-            //btn.onclick = function() {
-                //load_profile(username, user_id);
-            //}
-        //})
     })
 }
 
@@ -78,15 +72,14 @@ function load_profile(username, user_id) {
 
     document.querySelector('#username').innerHTML = username;
 
-    //display follow and unfollow button
-    //document.querySelector('#follow').style.display = 'block';
-    //document.querySelector('#unfollow').style.display = 'block';
-
     //consider if user who created the post is the same who was logged in
     fetch('load_profile').then(response => response.json()).then(data => {
         if (parseInt(user_id) === parseInt(data.login_user_id)) {
-            //document.querySelector('#follow').style.display = 'none';
-            //document.querySelector('#unfollow').style.display = 'none';
+            document.querySelector('#follow').style.display = 'none';
+            document.querySelector('#unfollow').style.display = 'none';
+        } else {
+            document.querySelector('#follow').style.display = 'block';
+            document.querySelector('#unfollow').style.display = 'none';
         }
     })
 }
