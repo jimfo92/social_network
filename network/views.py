@@ -84,4 +84,12 @@ def new_post(request):
 
 
 def load_profile(request):
-    return JsonResponse({"login_user_id": request.user.id})
+    #get user_id
+    user_id = int(request.GET['user_id'])
+
+    posts = Post.objects.filter(user=user_id)
+
+    posts = posts.order_by("-timestamp").all()
+
+    return JsonResponse({"login_user_id": request.user.id,
+    "posts":[post.serialize() for post in posts]}, safe=False)

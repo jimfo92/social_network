@@ -20,6 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return false;
     }
+
+    //listener for username in layout.html
+    document.querySelector('#user_username').addEventListener('click', () => {
+        let user_id = document.querySelector('#user_username').dataset.user_id;
+        let username = document.querySelector('#user_username').innerHTML;
+
+        load_profile(username, user_id);
+    })
 })
 
 
@@ -40,6 +48,8 @@ function load_posts() {
 function load_profile(username, user_id) {
     console.log('load_user_profile ' + username + ' ' + user_id);
 
+    document.querySelector('.post').innerHTML = '';
+
     //Display user_profile, and dissapear post input
     document.querySelector('#user_profile').style.display = 'block';
     document.querySelector('#container').style.display = 'none';
@@ -47,7 +57,8 @@ function load_profile(username, user_id) {
     document.querySelector('#username').innerHTML = username;
 
     //consider if user who created the post is the same who was logged in
-    fetch('load_profile').then(response => response.json()).then(data => {
+    fetch(`/load_profile?user_id=${user_id}`).then(response => response.json()).then(data => {
+        console.log(data);
         if (parseInt(user_id) === parseInt(data.login_user_id)) {
             document.querySelector('#follow').style.display = 'none';
             document.querySelector('#unfollow').style.display = 'none';
@@ -55,6 +66,9 @@ function load_profile(username, user_id) {
             document.querySelector('#follow').style.display = 'block';
             document.querySelector('#unfollow').style.display = 'none';
         }
+
+        //load posts
+        display_posts(data.posts);
     })
 }
 
