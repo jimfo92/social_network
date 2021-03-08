@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.deletion import CASCADE
 
 
 class User(AbstractUser):
@@ -24,3 +25,11 @@ class Post(models.Model):
             "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p"),
             "likes_number": self.likes
         }
+
+
+class Relationships(models.Model):
+    user_follow = models.ForeignKey(User, null=True, on_delete=CASCADE)
+    user_followed = models.ForeignKey(User, null=True, related_name='user_follow', on_delete=CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.user_follow} follows: {self.user_followed}"

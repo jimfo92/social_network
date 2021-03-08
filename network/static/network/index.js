@@ -28,6 +28,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         load_profile(username, user_id);
     })
+
+    document.querySelector('#follow').addEventListener('click', () => {
+        let user_id = document.querySelector('#username').dataset.user_id;
+        let username = document.querySelector('#username').innerText;
+        
+        fetch(`follow?user_id=${user_id}`).then(response => response.json()).then(rs => {
+            console.log(rs.message);
+            load_profile(username, user_id);
+        } );
+    })
+
+
+    document.querySelector('#unfollow').addEventListener('click', () => {
+        let user_id = document.querySelector('#username').dataset.user_id;
+        let username = document.querySelector('#username').innerText;
+        
+        fetch(`unfollow?user_id=${user_id}`).then(response => response.json()).then(rs => {
+            console.log(rs.message);
+            load_profile(username, user_id);
+        } );
+    })
+
+    document.querySelector('#following_user_posts').addEventListener('click', () => {
+        document.querySelector('#container').style.display = 'none';
+        document.querySelector('#user_profile').style.display = 'none';
+
+        document.querySelector('.post').innerHTML = '';
+
+        fetch(`following_user_posts`).then(response => response.json()).then(posts => {
+            console.log(posts);
+            display_posts(posts);
+        })
+    })
 })
 
 
@@ -55,16 +88,25 @@ function load_profile(username, user_id) {
     document.querySelector('#container').style.display = 'none';
 
     document.querySelector('#username').innerHTML = username;
+    //asign user_id to html dataset to retrive when follow-unfollow button clicked
+    document.querySelector('#username').dataset.user_id = user_id;
 
     //consider if user who created the post is the same who was logged in
     fetch(`/load_profile?user_id=${user_id}`).then(response => response.json()).then(data => {
         console.log(data);
+        document.querySelector('#followers').innerText = `Followers: ${data.followers}`;
+        document.querySelector('#following').innerText = `Following: ${data.following}`;
         if (parseInt(user_id) === parseInt(data.login_user_id)) {
             document.querySelector('#follow').style.display = 'none';
             document.querySelector('#unfollow').style.display = 'none';
         } else {
-            document.querySelector('#follow').style.display = 'block';
-            document.querySelector('#unfollow').style.display = 'none';
+            if (data.is_following === true) {
+                document.querySelector('#follow').style.display = 'none';
+                document.querySelector('#unfollow').style.display = 'block';
+            } else {
+                document.querySelector('#follow').style.display = 'block';
+                document.querySelector('#unfollow').style.display = 'none';
+            }
         }
 
         //load posts

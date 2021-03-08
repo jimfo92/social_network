@@ -5,13 +5,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import User, Post
+from .models import User, Post, Relationships
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 
 def index(request):
-
     return render(request, "network/index.html")
 
 def load_posts(request):
@@ -86,10 +85,53 @@ def new_post(request):
 def load_profile(request):
     #get user_id
     user_id = int(request.GET['user_id'])
+    profile_user = User(pk=user_id)
 
-    posts = Post.objects.filter(user=user_id)
-
+    posts = Post.objects.filter(user=profile_user)
     posts = posts.order_by("-timestamp").all()
 
+    try:
+        is_following = Relationships.objects.get(user_follow=request.user, user_followed=profile_user)
+        is_following = True
+    except:
+        is_following = False
+
     return JsonResponse({"login_user_id": request.user.id,
-    "posts":[post.serialize() for post in posts]}, safe=False)
+    "posts":[post.serialize() for post in posts], 
+    "followers":Relationships.objects.filter(user_followed=profile_user).count(), 
+    "following":Relationships.objects.filter(user_follow=profile_user).count(), 
+    "is_following":is_following}, safe=False)
+
+
+def follow(request):
+    followed_id = int(request.GET['user_id'])
+    followed_user = User(pk = followed_id)
+
+    # Follow relationship
+    following = Relationships(user_follow=request.user, user_followed=followed_user)
+    following.save()
+
+    return JsonResponse({"message": f"{request.user} following {followed_user.username}."}, status=201)
+
+
+def unfollow(request):
+    followed_id = int(request.GET['user_id'])
+    followed_user = User(pk = followed_id)
+
+    following = Relationships.objects.filter(user_follow=request.user, user_followed=followed_user)
+    following.delete()
+
+    return JsonResponse({"message": f"{request.user} unfollowing {followed_user.username}."}, status=201)
+
+
+@login_required
+def following_user_posts(request):
+    following_users = Relationships.objects.filter(user_follow=request.user)
+    
+    posts = Post.objects.none()
+    print(f'users: {following_users}')
+    for f_user in following_users:
+        posts |= Post.objects.filter(user=f_user.user_followed)
+
+    print(f'posts: {posts}')    
+    return JsonResponse([post.serialize() for post in posts], safe=False)
