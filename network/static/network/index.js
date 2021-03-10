@@ -1,6 +1,12 @@
-document.addEventListener('DOMContentLoaded', function() {
+// to manage pagination
+var page = 1;
+var type;
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('#user_profile').style.display = 'none';
+
     //fetch data from the database
-    load_posts();
+    load_posts('all');
 
     //new_post onSubmit 
     document.querySelector('#new_post').onsubmit = function() {
@@ -15,27 +21,32 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             console.log(response);
-            load_posts();
+            load_posts('all');
         })
 
         return false;
     }
 
     //listener for username in layout.html
-    document.querySelector('#user_username').addEventListener('click', () => {
+    document.querySelector('#user_username').addEventListener('click', function() {
         let user_id = document.querySelector('#user_username').dataset.user_id;
         let username = document.querySelector('#user_username').innerHTML;
 
+        //initialize pagination when username link clicked
+        window.page = 1;
+
         load_profile(username, user_id);
+        load_posts('user');
     })
 
     document.querySelector('#follow').addEventListener('click', () => {
         let user_id = document.querySelector('#username').dataset.user_id;
         let username = document.querySelector('#username').innerText;
         
-        fetch(`follow?user_id=${user_id}`).then(response => response.json()).then(rs => {
+        fetch(`follow_unfollow?type=follow&user_id=${user_id}`).then(response => response.json()).then(rs => {
             console.log(rs.message);
             load_profile(username, user_id);
+            load_posts('user');
         } );
     })
 
@@ -44,37 +55,67 @@ document.addEventListener('DOMContentLoaded', function() {
         let user_id = document.querySelector('#username').dataset.user_id;
         let username = document.querySelector('#username').innerText;
         
-        fetch(`unfollow?user_id=${user_id}`).then(response => response.json()).then(rs => {
+        fetch(`follow_unfollow?type=unfollow&user_id=${user_id}`).then(response => response.json()).then(rs => {
             console.log(rs.message);
             load_profile(username, user_id);
+            load_posts('user');
         } );
     })
 
-    document.querySelector('#following_user_posts').addEventListener('click', () => {
+    document.querySelector('#following_user_posts').addEventListener('click', function() {
         document.querySelector('#container').style.display = 'none';
         document.querySelector('#user_profile').style.display = 'none';
 
         document.querySelector('.post').innerHTML = '';
 
-        fetch(`following_user_posts`).then(response => response.json()).then(posts => {
-            console.log(posts);
-            display_posts(posts);
-        })
+        // initialize pagination when following link clicked
+        window.page = 1;
+
+        load_posts('following_users');
+    })
+
+    document.querySelector('#next').addEventListener('click', () => {
+        window.page = window.page + 1;
+        load_posts(window.type);
+    })
+
+    document.querySelector('#previous').addEventListener('click', function() {
+        window.page = window.page - 1;
+        load_posts(window.type);
     })
 })
 
 
-function load_posts() {
-    //not display user_profile id
-    document.querySelector('#user_profile').style.display = 'none';
+function load_posts(type) {
+    console.log(type);
 
     //clear input field
     document.querySelector('#exampleFormControlTextarea1').value = '';
 
-    fetch('/load_posts').then(response => response.json()).then((posts) => {
-        console.log(posts);
-        display_posts(posts);
-    })
+    if (type === 'all') {
+        fetch(`/load_posts?type=all&page=${window.page}`).then(response => response.json()).then((posts) => {
+            console.log(posts.posts);
+            manage_pagination('all', posts.has_next, posts.has_previous);
+            display_posts(posts.posts);
+        })
+    }
+
+    if (type === 'user') {
+        let user_id = document.querySelector('#username').dataset.user_id;
+        fetch(`/load_posts?type=user&user_id=${user_id}&page=${window.page}`).then(response => response.json()).then(data => {
+            console.log(data.posts);
+            manage_pagination('user', data.has_next, data.has_previous);
+            display_posts(data.posts);
+        })
+    }
+
+    if (type === 'following_users') {
+        fetch(`/load_posts?type=following_users&page=${window.page}`).then(response => response.json()).then(posts => {
+            console.log(posts.posts);
+            manage_pagination('following_users', posts.has_next, posts.has_previous);
+            display_posts(posts.posts);
+        })
+    }
 }
 
 
@@ -108,14 +149,13 @@ function load_profile(username, user_id) {
                 document.querySelector('#unfollow').style.display = 'none';
             }
         }
-
-        //load posts
-        display_posts(data.posts);
     })
 }
 
 
 function display_posts(posts) {
+    document.querySelector('.post').innerHTML = '';
+
     posts.forEach(post => {
         //create post
         let div = document.createElement('div');
@@ -141,6 +181,29 @@ function display_posts(posts) {
 
         username.addEventListener('click', () => {
             load_profile(post.user_post, post.user_id);
+
+            //initialize pagination when user clicked
+            window.page =1;
+
+            load_posts('user');
         })
     });
+}
+
+
+function manage_pagination(type_posts, has_next, has_previous) {
+    //initiate pagination
+    window.type = type_posts;
+
+    if (!has_previous) {
+        document.querySelector('#previous').style.display = 'none';
+    } else {
+        document.querySelector('#previous').style.display = 'block';
+    }
+
+    if (!has_next) {
+        document.querySelector('#next').style.display = 'none';
+    } else {
+        document.querySelector('#next').style.display = 'block';
+    }
 }

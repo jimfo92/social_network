@@ -26,3 +26,11 @@ form {
 #exampleFormControlTextarea1 {
     width: 90%;
 }
+
+.paginator_buttons {
+    margin-top: 0.5em; 
+    text-align: right; 
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+    right: 0;
+}
