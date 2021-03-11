@@ -112,6 +112,8 @@ def new_post(request):
         post = Post(user=request.user, post_data=data)
         post.save()
         return JsonResponse({"message": "Post sent successfully."}, status=201)
+    
+    return JsonResponse({"error": "Post not found."}, status=404)
 
 
 def load_profile(request):
@@ -145,3 +147,30 @@ def follow_unfollow(request):
     following = Relationships.objects.get(user_follow=request.user, user_followed=followed_user)
     following.delete()
     return JsonResponse({"message": f"{request.user} unfollowing {followed_user.username}."}, status=201)
+
+
+@csrf_exempt 
+@login_required
+def edit_post(request):
+    if request.method != "PUT":
+        return JsonResponse({
+            "error": "At least one recipient required."
+        }, status=400)
+
+    data = json.loads(request.body.decode("utf-8"))
+
+    if request.user.id != data.get("user_id"):
+        return JsonResponse({
+            "error": "At least one recipient required."
+        }, status=400)
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=data.get("post_id"))
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    if data.get("new_post") is not None:
+        post.post_data = data.get("new_post")
+        post.save()
+        return JsonResponse({"message": "Post updated successfully."}, status=201)

@@ -4,6 +4,7 @@ var type;
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#user_profile').style.display = 'none';
+    document.querySelector('#edit_post').style.display = 'none';
 
     //fetch data from the database
     load_posts('all');
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#following_user_posts').addEventListener('click', function() {
         document.querySelector('#container').style.display = 'none';
         document.querySelector('#user_profile').style.display = 'none';
+        document.querySelector('#edit_post').style.display = 'none';
 
         document.querySelector('.post').innerHTML = '';
 
@@ -127,6 +129,7 @@ function load_profile(username, user_id) {
     //Display user_profile, and dissapear post input
     document.querySelector('#user_profile').style.display = 'block';
     document.querySelector('#container').style.display = 'none';
+    document.querySelector('#edit_post').style.display = 'none';
 
     document.querySelector('#username').innerHTML = username;
     //asign user_id to html dataset to retrive when follow-unfollow button clicked
@@ -168,10 +171,18 @@ function display_posts(posts) {
         div.appendChild(username);
         let br = document.createElement('div');
         div.appendChild(br);
-        let edit = document.createElement('A');
-        edit.setAttribute('href',"#");
-        edit.innerHTML = 'edit';
-        div.append(edit);
+        //edit link
+        let login_user_id = document.querySelector('#user_username').dataset.user_id;
+        if (login_user_id == post.user_id) {
+            let edit = document.createElement('A');
+            edit.setAttribute('href',"#");
+            edit.innerHTML = 'edit';
+            div.append(edit);
+
+            edit.addEventListener('click', () => {
+                edit_post(post.user_id, post.post_id, post.post);
+            })
+        }
         let data = document.createElement('p');
         data.innerHTML = post.post;
         div.appendChild(data);
@@ -205,5 +216,39 @@ function manage_pagination(type_posts, has_next, has_previous) {
         document.querySelector('#next').style.display = 'none';
     } else {
         document.querySelector('#next').style.display = 'block';
+    }
+}
+
+
+function edit_post(user_id, post_id, post_data) {
+    console.log(`post ${post_id} will be updated`);
+    document.querySelector('#container').style.display = 'none';
+    document.querySelector('#edit_post').style.display = 'block';
+    
+    document.querySelector('#edit').value = post_data;
+
+    //edit post submit
+    document.querySelector('#edit_post').onsubmit = function() {
+        //take textarea value
+        let new_post = {
+            "new_post":document.querySelector('#edit').value,
+            "post_id":post_id,
+            "user_id":user_id
+        }
+
+        //fetching the new_post to database
+        fetch('/edit_post', {
+            method: "PUT", 
+            body: JSON.stringify(new_post),
+            headers: {"Content-type": "application/json; charset=UTF-8"}
+        })
+        .then(response => {
+            console.log(response);
+            document.querySelector('#container').style.display = 'block';
+            document.querySelector('#edit_post').style.display = 'none';
+            load_posts('all');
+        })
+
+        return false;
     }
 }
