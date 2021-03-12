@@ -192,7 +192,7 @@ function display_posts(posts) {
         div.appendChild(timestamp);
 
         //manage likes
-        fetch(`is_user_like_post?post_id=${post.post_id}&user_id=${post.user_id}`).
+        fetch(`is_user_like_post?post_id=${post.post_id}`).
         then(response => response.json()).then(res => {
             console.log(res);
             let like = document.createElement('i');
@@ -204,7 +204,6 @@ function display_posts(posts) {
                 like.addEventListener('click', () => {
                     console.log('dislike post');
                     update_post = {
-                        "user_id":post.user_id,
                         "post_id":post.post_id,
                         "type":"dislike"
                     }
@@ -226,7 +225,6 @@ function display_posts(posts) {
                 like.addEventListener('click', () => {
                     console.log('like the post');
                     update_post = {
-                        "user_id":post.user_id,
                         "post_id":post.post_id,
                         "type":"like"
                     }
@@ -242,6 +240,10 @@ function display_posts(posts) {
                 })
 
             }
+            let number_of_likes = document.createElement('span');
+            number_of_likes.innerHTML = res.number_of_likes;
+            div.appendChild(number_of_likes);
+
         })
         
         username.addEventListener('click', () => {

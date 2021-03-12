@@ -134,16 +134,16 @@ def load_profile(request):
 
 
 def is_user_like_post(request):
-    user_id = int(request.GET['user_id'])
     post_id = int(request.GET['post_id'])
 
     try:
-        is_liked = Likes.objects.get(post=post_id, user=user_id)
+        is_liked = Likes.objects.get(post=post_id, user=request.user)
         is_liked = True
     except:
         is_liked = False
 
-    return JsonResponse({"is_user_liked_post": is_liked}, safe=False)
+    return JsonResponse({"is_user_liked_post": is_liked, 
+    "number_of_likes":Likes.objects.filter(post=post_id).count()}, safe=False)
 
 
 def follow_unfollow(request):
@@ -200,13 +200,12 @@ def like_dislike(request):
 
     if data.get("type") == 'like':
         ps = Post.objects.get(pk=data.get('post_id'))
-        us = User.objects.get(pk=data.get('user_id'))
-        post = Likes(post=ps, user=us)
+        post = Likes(post=ps, user=request.user)
         post.save()
 
         return JsonResponse({"message": "Like updated successfully."}, status=201)
 
     #unlike the post
-    post = Likes.objects.get(post=data.get('post_id'), user=data.get('user_id'))
+    post = Likes.objects.get(post=data.get('post_id'), user=request.user)
     post.delete()
     return JsonResponse({"message": "Like deleted successfully."}, status=201)
