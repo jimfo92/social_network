@@ -28,17 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
-    //listener for username in layout.html
-    document.querySelector('#user_username').addEventListener('click', function() {
-        let user_id = document.querySelector('#user_username').dataset.user_id;
-        let username = document.querySelector('#user_username').innerHTML;
+    try {
+        //listener for username in layout.html
+        document.querySelector('#user_username').addEventListener('click', function() {
+            let user_id = document.querySelector('#user_username').dataset.user_id;
+            let username = document.querySelector('#user_username').innerHTML;
 
-        //initialize pagination when username link clicked
-        window.page = 1;
+            //initialize pagination when username link clicked
+            window.page = 1;
 
-        load_profile(username, user_id);
-        load_posts('user');
-    })
+            load_profile(username, user_id);
+            load_posts('user');
+        })
+    } catch (err) {
+        console.log(err);
+    }
 
     document.querySelector('#follow').addEventListener('click', () => {
         let user_id = document.querySelector('#username').dataset.user_id;
@@ -63,18 +67,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } );
     })
 
-    document.querySelector('#following_user_posts').addEventListener('click', function() {
-        document.querySelector('#container').style.display = 'none';
-        document.querySelector('#user_profile').style.display = 'none';
-        document.querySelector('#edit_post').style.display = 'none';
-
-        document.querySelector('.post').innerHTML = '';
-
-        // initialize pagination when following link clicked
-        window.page = 1;
-
-        load_posts('following_users');
-    })
+    try {
+        document.querySelector('#following_user_posts').addEventListener('click', function() {
+            document.querySelector('#container').style.display = 'none';
+            document.querySelector('#user_profile').style.display = 'none';
+            document.querySelector('#edit_post').style.display = 'none';
+    
+            document.querySelector('.post').innerHTML = '';
+    
+            // initialize pagination when following link clicked
+            window.page = 1;
+    
+            load_posts('following_users');
+        })
+    } catch (err) {
+        console.log(err);
+    }
 
     document.querySelector('#next').addEventListener('click', () => {
         window.page = window.page + 1;
@@ -173,7 +181,12 @@ function display_posts(posts) {
         div.appendChild(br);
 
         //edit link
-        let login_user_id = document.querySelector('#user_username').dataset.user_id;
+        let login_user_id;
+        try {
+            login_user_id = document.querySelector('#user_username').dataset.user_id;
+        } catch (err){
+            console.log(err);
+        }
         if (login_user_id == post.user_id) {
             let edit = document.createElement('A');
             edit.setAttribute('href',"#");
