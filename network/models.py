@@ -11,7 +11,6 @@ class Post(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='user_posts')
     post_data = models.CharField(max_length=1000)
     timestamp = models.DateTimeField( auto_now_add=True)
-    likes = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return f"{self.user} posts: {self.post_data} on {self.timestamp}"
@@ -22,8 +21,7 @@ class Post(models.Model):
             "user_post": self.user.username,
             "user_id": self.user.id,
             "post": self.post_data,
-            "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p"),
-            "likes_number": self.likes
+            "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p")
         }
 
 
@@ -33,3 +31,11 @@ class Relationships(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_follow} follows: {self.user_followed}"
+
+
+class Likes(models.Model):
+    post = models.ForeignKey(Post, null=True, on_delete=CASCADE, related_name='number_likes')
+    user = models.ForeignKey(User, null=True, on_delete=CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.user} likes: {self.post}"

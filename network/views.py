@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import User, Post, Relationships
+from .models import User, Post, Relationships, Likes
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -133,6 +133,19 @@ def load_profile(request):
     "is_following":is_following}, safe=False)
 
 
+def is_user_like_post(request):
+    user_id = int(request.GET['user_id'])
+    post_id = int(request.GET['post_id'])
+
+    try:
+        is_liked = Likes.objects.get(post=post_id, user=user_id)
+        is_liked = True
+    except:
+        is_liked = False
+
+    return JsonResponse({"is_user_liked_post": is_liked}, safe=False)
+
+
 def follow_unfollow(request):
     type = request.GET.get('type')
 
@@ -174,3 +187,26 @@ def edit_post(request):
         post.post_data = data.get("new_post")
         post.save()
         return JsonResponse({"message": "Post updated successfully."}, status=201)
+
+
+@csrf_exempt 
+def like_dislike(request):
+    if request.method != "POST":
+        return JsonResponse({
+            "error": "At least one recipient required."
+        }, status=400)
+
+    data = json.loads(request.body.decode("utf-8"))
+
+    if data.get("type") == 'like':
+        ps = Post.objects.get(pk=data.get('post_id'))
+        us = User.objects.get(pk=data.get('user_id'))
+        post = Likes(post=ps, user=us)
+        post.save()
+
+        return JsonResponse({"message": "Like updated successfully."}, status=201)
+
+    #unlike the post
+    post = Likes.objects.get(post=data.get('post_id'), user=data.get('user_id'))
+    post.delete()
+    return JsonResponse({"message": "Like deleted successfully."}, status=201)

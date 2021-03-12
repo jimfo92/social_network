@@ -171,6 +171,7 @@ function display_posts(posts) {
         div.appendChild(username);
         let br = document.createElement('div');
         div.appendChild(br);
+
         //edit link
         let login_user_id = document.querySelector('#user_username').dataset.user_id;
         if (login_user_id == post.user_id) {
@@ -190,6 +191,59 @@ function display_posts(posts) {
         timestamp.innerHTML = post.timestamp;
         div.appendChild(timestamp);
 
+        //manage likes
+        fetch(`is_user_like_post?post_id=${post.post_id}&user_id=${post.user_id}`).
+        then(response => response.json()).then(res => {
+            console.log(res);
+            let like = document.createElement('i');
+            if (res.is_user_liked_post) {
+                like.className = 'fas fa-heart';
+                like.style.color = 'red';
+                div.appendChild(like);
+
+                like.addEventListener('click', () => {
+                    console.log('dislike post');
+                    update_post = {
+                        "user_id":post.user_id,
+                        "post_id":post.post_id,
+                        "type":"dislike"
+                    }
+                    fetch('like_dislike', {
+                        method: "POST", 
+                        body: JSON.stringify(update_post),
+                        headers: {"Content-type": "application/json; charset=UTF-8"}
+                    }).
+                    then(response => response.json()).then(res => {
+                        console.log(res);
+                        load_posts(window.type);
+                    })
+                })
+
+            } else {
+                like.className = 'far fa-heart';
+                div.appendChild(like);
+
+                like.addEventListener('click', () => {
+                    console.log('like the post');
+                    update_post = {
+                        "user_id":post.user_id,
+                        "post_id":post.post_id,
+                        "type":"like"
+                    }
+                    fetch('like_dislike', {
+                        method: "POST", 
+                        body: JSON.stringify(update_post),
+                        headers: {"Content-type": "application/json; charset=UTF-8"}
+                    }).
+                    then(response => response.json()).then(res => {
+                        console.log(res);
+                        load_posts(window.type);
+                    })
+                })
+
+            }
+        })
+        
         username.addEventListener('click', () => {
             load_profile(post.user_post, post.user_id);
 
