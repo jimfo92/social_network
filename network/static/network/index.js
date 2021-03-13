@@ -148,7 +148,7 @@ function load_profile(username, user_id) {
         console.log(data);
         document.querySelector('#followers').innerText = `Followers: ${data.followers}`;
         document.querySelector('#following').innerText = `Following: ${data.following}`;
-        if (parseInt(user_id) === parseInt(data.login_user_id)) {
+        if (parseInt(user_id) === parseInt(document.querySelector('#user_username').dataset.user_id)) {
             document.querySelector('#follow').style.display = 'none';
             document.querySelector('#unfollow').style.display = 'none';
         } else {

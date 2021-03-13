@@ -10,11 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 
-
+@login_required
 def index(request):
     return render(request, "network/index.html")
 
-
+@login_required
 def load_posts(request):
     type = request.GET.get('type')
 
@@ -116,6 +116,7 @@ def new_post(request):
     return JsonResponse({"error": "Post not found."}, status=404)
 
 
+@login_required
 def load_profile(request):
     #get user_id
     user_id = int(request.GET['user_id'])
@@ -127,12 +128,12 @@ def load_profile(request):
     except:
         is_following = False
 
-    return JsonResponse({"login_user_id": request.user.id,
-    "followers":Relationships.objects.filter(user_followed=profile_user).count(), 
+    return JsonResponse({"followers":Relationships.objects.filter(user_followed=profile_user).count(), 
     "following":Relationships.objects.filter(user_follow=profile_user).count(), 
     "is_following":is_following}, safe=False)
 
 
+@login_required
 def is_user_like_post(request):
     post_id = int(request.GET['post_id'])
 
@@ -146,6 +147,7 @@ def is_user_like_post(request):
     "number_of_likes":Likes.objects.filter(post=post_id).count()}, safe=False)
 
 
+@login_required
 def follow_unfollow(request):
     type = request.GET.get('type')
 
@@ -190,6 +192,7 @@ def edit_post(request):
 
 
 @csrf_exempt 
+@login_required
 def like_dislike(request):
     if request.method != "POST":
         return JsonResponse({
