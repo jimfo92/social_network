@@ -1,4 +1,4 @@
-# social_network
+# twitter_network
 
 A Twitter-like social network website for making posts and following users.
 
@@ -13,5 +13,4 @@ A Twitter-like social network website for making posts and following users.
   - Pagination: On any page that displays posts, posts should only be displayed 10 on a page.
   
 ## To run the application
-  - Install ***Django Environ*** for Django enviroment variables with ***pip3 install django-environ***
   - ***python3 manage.py runserver*** to run the app
