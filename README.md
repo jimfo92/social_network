@@ -1,5 +1,4 @@
 # twitter_clone
-
 A Twitter-like social network website for making posts and following users.
 
 ## Features
@@ -12,5 +11,11 @@ A Twitter-like social network website for making posts and following users.
   - Edit Post: Users should be able to click an “Edit” button or link on any of their own posts to edit that post.
   - Pagination: On any page that displays posts, posts should only be displayed 10 on a page.
   
-## To run the application
-  - ***python3 manage.py runserver*** to run the app
+## Install
+  In your terminal, cd into the project directory.
+  ```
+  python manage.py makemigrations
+  python manage.py migrate
+  
+  python manage.py runserver
+  ```
