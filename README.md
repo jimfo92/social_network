@@ -12,7 +12,7 @@ A Twitter-like social network website for making posts and following users.
   - Pagination: On any page that displays posts, posts should only be displayed 10 on a page.
   
 ## Install
-  In your terminal, cd into the project directory.
+  In your terminal, `cd` into the project directory.
   ```
   python manage.py makemigrations
   python manage.py migrate
